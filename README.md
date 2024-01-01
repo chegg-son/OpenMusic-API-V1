@@ -1,4 +1,4 @@
-# OpenMusic-API-V1
+# OpenMusic-API-V1 (DICODING)
 
 # DESKRIPSI
 Repositori ini menampung hasil dari projek tugas submission dicoding pada modul Belajar Fundamental Aplikasi Back-End. Saat ini projek yang diupload merupakan hasil dari tugas submission yang pertama
