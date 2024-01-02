@@ -40,14 +40,14 @@ exports.up = (pgm) => {
             notNull: true
         },
         duration: {
-            type: 'INTEGER',
-            notNull: true
+            type: 'INTEGER'
         },
         album_id: {
-            type: 'VARCHAR(50)',
-            notNull: true
+            type: 'VARCHAR(50)'
         }
     })
+    pgm.alterColumn('songs', 'duration', 'allowNull')
+    pgm.alterColumn('songs', 'album_id', 'allowNull')
 }
 
 exports.down = (pgm) => {

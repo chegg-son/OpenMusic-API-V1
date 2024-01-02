@@ -40,7 +40,29 @@ class MusicService {
             throw new NotFoundError('Album tidak ditemukan')
         }
 
-        return result.rows[0]
+        // add new key "songs" into result.rows[0]
+        const albums = result.rows[0]
+
+        const songsQuery = {
+            text: 'SELECT * FROM songs INNER JOIN albums ON albums.id=songs."album_id" WHERE albums.id=$1',
+            values: [id]
+        }
+
+        const songsResult = await this._pool.query(songsQuery)
+        console.log('bagian songs')
+        console.log(songsResult.rows)
+
+        const songs = songsResult.rows.map((row) => ({
+            id: row.id,
+            title: row.title,
+            performer: row.performer
+        }))
+
+        albums.songs = songs
+
+        console.log('bagian albums')
+        console.log(albums)
+        return albums
     }
 
     async editAlbumById(id, { name, year }) {
@@ -70,9 +92,9 @@ class MusicService {
     }
 
     // bagian songs
-    async addSong({ title, year, genre, performer, duration }) {
+    async addSong({ title, year, genre, performer, duration, albumId }) {
         const id = `song-${nanoid(16)}`
-        const albumId = `album-${nanoid(16)}`
+
         const query = {
             text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
             values: [id, title, year, genre, performer, duration, albumId]
