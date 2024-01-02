@@ -49,8 +49,6 @@ class MusicService {
         }
 
         const songsResult = await this._pool.query(songsQuery)
-        console.log('bagian songs')
-        console.log(songsResult.rows)
 
         const songs = songsResult.rows.map((row) => ({
             id: row.id,
@@ -60,8 +58,6 @@ class MusicService {
 
         albums.songs = songs
 
-        console.log('bagian albums')
-        console.log(albums)
         return albums
     }
 
@@ -109,20 +105,33 @@ class MusicService {
         return result.rows[0].id
     }
 
-    async getSongs() {
-        const query = {
-            text: 'SELECT * FROM songs'
+    async getSongs({ title, performer }) {
+        let query
+        // using ILIKE for query string
+        if (title && performer) {
+            query = {
+                text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2',
+                values: [`%${title}%`, `%${performer}%`]
+            }
+        } else if (title) {
+            query = {
+                text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1',
+                values: [`%${title}%`]
+            }
+        } else if (performer) {
+            query = {
+                text: 'SELECT id, title, performer FROM songs WHERE performer ILIKE $1',
+                values: [`%${performer}%`]
+            }
+        } else {
+            query = {
+                text: 'SELECT id, title, performer FROM songs'
+            }
         }
 
         const result = await this._pool.query(query)
 
-        const songs = result.rows.map((row) => ({
-            id: row.id,
-            title: row.title,
-            performer: row.performer
-        }))
-
-        return songs
+        return result.rows
     }
 
     async getSongById(id) {
